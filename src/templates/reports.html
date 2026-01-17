@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>System Reports</h2>
+<div class="row">
+    <div class="col-md-6"><div class="card mb-4"><div class="card-header bg-info text-white">Report 1: Degree Details</div><div class="card-body"><form method="POST"><input type="hidden" name="report_type" value="degree_details"><label class="form-label">Select Degree</label><select name="degree_selection" class="form-select mb-3">{% for d in degrees %}<option value="{{ d.degree_name }}|{{ d.degree_level }}">{{ d.degree_name }} ({{ d.degree_level }})</option>{% endfor %}</select><div class="input-group mb-3"><span class="input-group-text">Year Range</span><input type="number" name="start_year" class="form-control" value="2024"><input type="number" name="end_year" class="form-control" value="2026"></div><button type="submit" class="btn btn-info text-white">View Curriculum</button></form></div></div></div>
+    <div class="col-md-6"><div class="card mb-4"><div class="card-header bg-danger text-white">Report 2: Passing Rates</div><div class="card-body"><form method="POST"><input type="hidden" name="report_type" value="passing_rate"><div class="row mb-3"><div class="col"><select name="semester" class="form-select"><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="Summer">Summer</option></select></div><div class="col"><input type="number" name="year" class="form-control" value="2024"></div></div><div class="mb-3"><input type="number" name="percentage" class="form-control" value="80" placeholder="Min %"></div><button type="submit" class="btn btn-danger">Find Sections</button></form></div></div></div>
+</div>
+<div class="row">
+    <div class="col-md-6"><div class="card mb-4"><div class="card-header bg-warning text-dark">Report 3: Course Sections</div><div class="card-body"><form method="POST"><input type="hidden" name="report_type" value="course_sections"><select name="course_code" class="form-select mb-3">{% for c in all_courses %}<option value="{{ c.course_code }}">{{ c.course_code }}</option>{% endfor %}</select><div class="input-group mb-2"><select name="start_sem" class="form-select"><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="Summer">Summer</option></select><input type="number" name="start_year" class="form-control" value="2024"></div><div class="input-group mb-3"><select name="end_sem" class="form-select"><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="Summer">Summer</option></select><input type="number" name="end_year" class="form-control" value="2026"></div><button type="submit" class="btn btn-warning">List Sections</button></form></div></div></div>
+    <div class="col-md-6"><div class="card mb-4"><div class="card-header bg-success text-white">Report 4: Instructor History</div><div class="card-body"><form method="POST"><input type="hidden" name="report_type" value="instructor_sections"><select name="instructor_id" class="form-select mb-3">{% for i in all_instructors %}<option value="{{ i.instructor_id }}">{{ i.last_name }}, {{ i.first_name }}</option>{% endfor %}</select><div class="input-group mb-2"><select name="start_sem" class="form-select"><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="Summer">Summer</option></select><input type="number" name="start_year" class="form-control" value="2024"></div><div class="input-group mb-3"><select name="end_sem" class="form-select"><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="Summer">Summer</option></select><input type="number" name="end_year" class="form-control" value="2026"></div><button type="submit" class="btn btn-success">View Teaching History</button></form></div></div></div>
+</div>
+<div class="row"><div class="col-md-6"><div class="card mb-4"><div class="card-header bg-secondary text-white">Report 5: Evaluation Status</div><div class="card-body"><form method="POST"><input type="hidden" name="report_type" value="eval_status"><div class="input-group mb-3"><select name="semester" class="form-select"><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="Summer">Summer</option></select><input type="number" name="year" class="form-control" value="2024"></div><button type="submit" class="btn btn-secondary">Check Status</button></form></div></div></div></div>
+<hr>
+{% if report_type %}
+    <h3>Results: <span class="text-primary">{{ search_term }}</span></h3>
+    {% if report_type == 'degree_details' %}
+        <div class="row mb-4"><div class="col-md-6"><div class="card"><div class="card-header">Courses</div><ul class="list-group list-group-flush">{% for c in results.courses %}<li class="list-group-item">{{ c.course_code }}: {{ c.course_name }} {% if c.is_core %}<span class="badge bg-success">CORE</span>{% else %}<span class="badge bg-secondary">Elective</span>{% endif %}</li>{% endfor %}</ul></div></div><div class="col-md-6"><div class="card"><div class="card-header">Objectives</div><ul class="list-group list-group-flush">{% for o in results.objectives %}<li class="list-group-item"><strong>{{ o.obj_code }}</strong>: {{ o.title }}</li>{% endfor %}</ul></div></div></div>
+        <div class="card mb-4"><div class="card-header">Sections</div><div class="card-body"><table class="table table-sm"><thead><tr><th>Year</th><th>Sem</th><th>Course</th><th>Sec</th></tr></thead><tbody>
+            {% for s in results.sections %}
+            <tr>
+                <td>{{ s.year_offered }}</td>
+                <td>{{ s.semester }}</td>
+                <td>{{ s.course_code }}</td>
+                <td>{{ "%03d"|format(s.section_num|int) }}</td> </tr>
+            {% endfor %}
+        </tbody></table></div></div>
+        <div class="card mb-4"><div class="card-header">Mappings</div><div class="card-body"><table class="table table-bordered"><thead><tr><th>Objective</th><th>Courses</th></tr></thead><tbody>{% for item in results.obj_map %}<tr><td>{{ item.obj_code }}</td><td>{{ item.course_code }}</td></tr>{% endfor %}</tbody></table></div></div>
+
+    {% elif report_type == 'passing_rate' %}
+        <table class="table table-striped table-hover"><thead><tr><th>Degree</th><th>Course</th><th>Sec</th><th>Methods Used</th><th>Passed</th><th>Total</th><th>Rate</th></tr></thead><tbody>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.degree_name }}</td>
+                <td>{{ r.course_code }}</td>
+                <td>{{ "%03d"|format(r.section_num|int) }}</td> <td><small class="text-primary">{{ r.methods }}</small></td>
+                <td>{{ r.passed }}</td>
+                <td>{{ r.total }}</td>
+                <td><strong>{{ "%.1f"|format(r.pass_rate) }}%</strong></td>
+            </tr>
+            {% endfor %}
+        </tbody></table>
+        {% if not results %}<div class="alert alert-warning">No sections found.</div>{% endif %}
+
+    {% elif report_type == 'course_sections' %}
+        <table class="table table-bordered table-hover"><thead class="table-light"><tr><th>Year</th><th>Sem</th><th>Section</th><th>Instructor</th><th>Enrolled</th></tr></thead><tbody>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.year_offered }}</td>
+                <td>{{ r.semester }}</td>
+                <td>{{ "%03d"|format(r.section_num|int) }}</td> <td>{% if r.last_name %}{{ r.last_name }}, {{ r.first_name }}{% else %}<span class="text-muted">Unassigned</span>{% endif %}</td>
+                <td>{{ r.num_enrollments }}</td>
+            </tr>
+            {% endfor %}
+        </tbody></table>
+
+    {% elif report_type == 'instructor_sections' %}
+        <table class="table table-bordered table-hover"><thead class="table-light"><tr><th>Year</th><th>Sem</th><th>Section</th><th>Enrolled</th></tr></thead><tbody>
+            {% for r in results %}
+            <tr>
+                <td>{{ r.year_offered }}</td>
+                <td>{{ r.semester }}</td>
+                <td>{{ "%03d"|format(r.section_num|int) }}</td> <td>{{ r.num_enrollments }}</td>
+            </tr>
+            {% endfor %}
+        </tbody></table>
+
+    {% elif report_type == 'eval_status' %}
+        <table class="table table-bordered table-hover"><thead class="table-light"><tr><th>Course</th><th>Sec #</th><th>Status</th><th>Progress</th><th>Improvement Note?</th></tr></thead><tbody>
+            {% for r in results %}
+            <tr>
+                <td><strong>{{ r.course_code }}</strong><br><small>{{ r.course_name }}</small></td>
+                <td>{{ "%03d"|format(r.section_num|int) }}</td> <td>{% if r.actual_evals == 0 %}<span class="badge bg-danger">Not Entered</span>{% elif r.actual_evals < r.expected_evals %}<span class="badge bg-warning text-dark">Partially Entered</span>{% else %}<span class="badge bg-success">Entered</span>{% endif %}</td>
+                <td><small class="text-muted">{{ r.actual_evals }} of {{ r.expected_evals }} objectives</small></td>
+                <td>{% if r.impr_count > 0 %}<span class="badge bg-primary">Yes</span> <small>({{ r.impr_count }} notes)</small>{% else %}<span class="text-muted">No</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody></table>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Edit Section: {{ s.course_code }} (Sec {{ s.section_num }})</h2>
+
+<div class="alert alert-info">
+    <strong>Term:</strong> {{ s.semester }} {{ s.year_offered }}
+</div>
+
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Number of Enrollments</label>
+        <input type="number" name="enrollments" class="form-control" value="{{ s.num_enrollments }}" min="0" required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Update Section</button>
+    <a href="{{ url_for('manage_data') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Add Course & Link to Degree</h2>
+<div class="alert alert-info">
+    Note: A course must be assigned to a degree. If this course belongs to multiple degrees, 
+    add it here for the first one, then use the "Link Existing Course" feature later.
+</div>
+
+<form method="POST">
+    <div class="mb-3">
+        <label for="course_code" class="form-label">Course Code</label>
+        <input type="text" class="form-control" name="course_code" placeholder="e.g. CS5330" required maxlength="10">
+    </div>
+
+    <div class="mb-3">
+        <label for="course_name" class="form-label">Course Name</label>
+        <input type="text" class="form-control" name="course_name" placeholder="e.g. Database Systems" required>
+    </div>
+
+    <hr>
+
+    <div class="mb-3">
+        <label for="degree_selection" class="form-label">Assign to Degree</label>
+        <select class="form-select" name="degree_selection" required>
+            <option value="" disabled selected>Select a Degree...</option>
+            {% for d in degrees %}
+                <option value="{{ d.degree_name }}|{{ d.degree_level }}">
+                    {{ d.degree_name }} ({{ d.degree_level }})
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" name="is_core" id="is_core">
+        <label class="form-check-label" for="is_core">
+            <strong>Is this a Core Course?</strong> (Required for this degree?)
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Course</button>
+</form>
+{% endblock %}

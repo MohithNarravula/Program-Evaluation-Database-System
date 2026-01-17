@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Enter Evaluation: Step 1</h2>
+<form method="POST" class="row g-3">
+    <div class="col-md-6"><label>Degree Program</label><select name="degree_selection" class="form-select" required>{% for d in degrees %}<option value="{{ d.degree_name }}|{{ d.degree_level }}">{{ d.degree_name }} ({{ d.degree_level }})</option>{% endfor %}</select></div>
+    <div class="col-md-6"><label>Instructor</label><select name="instructor_id" class="form-select" required>{% for i in instructors %}<option value="{{ i.instructor_id }}">{{ i.last_name }}, {{ i.first_name }}</option>{% endfor %}</select></div>
+    <div class="col-md-3"><label>Semester</label><select name="semester" class="form-select"><option value="Fall">Fall</option><option value="Spring">Spring</option><option value="Summer">Summer</option></select></div>
+    <div class="col-md-3"><label>Year</label><input type="number" name="year" class="form-control" value="2024" required></div>
+    <div class="col-12"><button type="submit" class="btn btn-primary">Find Sections</button></div>
+</form>
+{% if context %}
+<hr><h3>Sections Found</h3>
+{% if sections %}
+    <div class="list-group">
+        {% for s in sections %}
+            <a href="{{ url_for('enter_evaluation_form', degree_str=context.degree_str, course_code=s.course_code, section_num=s.section_num, semester=context.semester, year=context.year) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <div><strong>{{ s.course_code }} - Section {{ s.section_num }}</strong><br>{{ s.course_name }}</div>
+                {% if s.eval_count > 0 %}<span class="badge bg-warning text-dark">{{ s.eval_count }} Objectives Rated</span>{% else %}<span class="badge bg-danger">Not Started</span>{% endif %}
+            </a>
+        {% endfor %}
+    </div>
+{% else %}<div class="alert alert-warning">No sections found.</div>{% endif %}
+{% endif %}
+{% endblock %}

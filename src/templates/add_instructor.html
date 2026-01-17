@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Add New Instructor</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Instructor ID (Unique)</label>
+        <input type="text" name="instructor_id" class="form-control" placeholder="e.g. I-105" required>
+    </div>
+    <div class="row mb-3">
+        <div class="col"><label class="form-label">First Name</label><input type="text" name="first_name" class="form-control" required></div>
+        <div class="col"><label class="form-label">Middle Name</label><input type="text" name="middle_name" class="form-control"></div>
+        <div class="col"><label class="form-label">Last Name</label><input type="text" name="last_name" class="form-control" required></div>
+    </div>
+    <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control"></div>
+    <button type="submit" class="btn btn-primary">Save Instructor</button>
+</form>
+{% endblock %}

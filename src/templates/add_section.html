@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Add Course Section</h2>
+<div class="alert alert-info">Note: Enrollment must be greater than 0. Section numbers will be auto-formatted (e.g. 1 -> 001).</div>
+
+<form method="POST">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Course</label>
+            <select name="course_code" class="form-select" required>
+                <option value="" disabled selected>Select Course...</option>
+                {% for c in courses %}
+                    <option value="{{ c.course_code }}" {% if c.status == 'Inactive' %}class="text-muted bg-light"{% endif %}>
+                        {{ c.course_code }}: {{ c.course_name }} {% if c.status == 'Inactive' %}(Archived){% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Instructor</label>
+            <select name="instructor_id" class="form-select" required>
+                <option value="" disabled selected>Select Instructor...</option>
+                {% for i in instructors %}
+                    <option value="{{ i.instructor_id }}" {% if i.status == 'Inactive' %}class="text-muted bg-light"{% endif %}>
+                        {{ i.last_name }}, {{ i.first_name }} {% if i.status == 'Inactive' %}(Archived){% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Section Number</label>
+            <input type="number" name="section_num" class="form-control" placeholder="e.g. 1" min="1" required>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Semester</label>
+            <select name="semester" class="form-select">
+                <option value="Fall">Fall</option>
+                <option value="Spring">Spring</option>
+                <option value="Summer">Summer</option>
+            </select>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Year</label>
+            <input type="number" name="year" class="form-control" value="2025" min="2000" required>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label class="form-label">Enrollment</label>
+            <input type="number" name="enrollments" class="form-control" placeholder="Count" min="1" required>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Section</button>
+</form>
+{% endblock %}

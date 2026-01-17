@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Map Course to Objective</h2>
+<p>Select a degree to see its Courses and Objectives.</p>
+<form method="GET" action="{{ url_for('map_course_objective') }}">
+    <label>1. Select Degree:</label>
+    <select name="degree" class="form-select" onchange="this.form.submit()">
+        <option value="" disabled selected>Select...</option>
+        {% for d in all_degrees %}
+            <option value="{{ d.degree_name }}|{{ d.degree_level }}" {% if selected_degree == d.degree_name + '|' + d.degree_level %}selected{% endif %}>{{ d.degree_name }} ({{ d.degree_level }})</option>
+        {% endfor %}
+    </select>
+</form>
+{% if selected_degree %}
+<hr>
+<form method="POST">
+    <input type="hidden" name="degree_str" value="{{ selected_degree }}">
+    <div class="card p-3">
+        <h5>Link Course to Objective</h5>
+        {% if courses and objectives %}
+            <div class="mb-3"><label>Select Course:</label><select name="course_code" class="form-select">{% for c in courses %}<option value="{{ c.course_code }}">{{ c.course_code }} : {{ c.course_name }}</option>{% endfor %}</select></div>
+            <div class="mb-3"><label>Select Objective:</label><select name="obj_code" class="form-select">{% for o in objectives %}<option value="{{ o.obj_code }}">{{ o.obj_code }} : {{ o.title }}</option>{% endfor %}</select></div>
+            <button type="submit" class="btn btn-success">Save Mapping</button>
+        {% else %}
+            <div class="alert alert-warning">No Courses or Objectives found for this degree.</div>
+        {% endif %}
+    </div>
+</form>
+{% endif %}
+{% endblock %}

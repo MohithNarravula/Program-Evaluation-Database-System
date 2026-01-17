@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3>Evaluate Section</h3>
+<div class="alert alert-secondary"><strong>Course:</strong> {{ info.c_code }} (Sec {{ info.sec }}) | <strong>Term:</strong> {{ info.sem }} {{ info.yr }} <br><strong>Degree Context:</strong> {{ info.d_str }}</div>
+<form method="POST">
+    <input type="hidden" name="degree_str" value="{{ info.d_str }}"><input type="hidden" name="course_code" value="{{ info.c_code }}"><input type="hidden" name="section_num" value="{{ info.sec }}"><input type="hidden" name="semester" value="{{ info.sem }}"><input type="hidden" name="year" value="{{ info.yr }}">
+    {% for obj in objs %}
+        {% set existing = data_map.get(obj.obj_code, {}) %}
+        {% set existing_methods = method_map.get(obj.obj_code, []) %}
+    <div class="card mb-4">
+        <div class="card-header bg-light"><strong>Objective:</strong> {{ obj.title }} <span class="text-muted">({{ obj.obj_code }})</span><br><small>{{ obj.description }}</small></div>
+        <div class="card-body">
+            <div class="mb-3"><label class="form-label fw-bold">Evaluation Method(s)</label><div class="row">
+                    {% for std in ['Homework', 'Project', 'Quiz', 'Oral Presentation', 'Report', 'Mid-term', 'Final Exam'] %}
+                    <div class="col-md-3"><div class="form-check"><input class="form-check-input" type="checkbox" name="methods_{{ obj.obj_code }}" value="{{ std }}" id="chk_{{ obj.obj_code }}_{{ loop.index }}" {% if std in existing_methods %}checked{% endif %}><label class="form-check-label" for="chk_{{ obj.obj_code }}_{{ loop.index }}">{{ std }}</label></div></div>
+                    {% endfor %}
+                </div><div class="mt-2"><label class="form-label text-muted"><small>Other (Optional, comma separated):</small></label><input type="text" name="method_other_{{ obj.obj_code }}" class="form-control form-control-sm" placeholder="e.g. Lab, Field Trip"></div></div><hr>
+            <label class="form-label fw-bold">Student Counts</label>
+            <div class="input-group mb-3"><span class="input-group-text">A</span><input type="number" name="count_A_{{ obj.obj_code }}" class="form-control" value="{{ existing.count_A or 0 }}" min="0"><span class="input-group-text">B</span><input type="number" name="count_B_{{ obj.obj_code }}" class="form-control" value="{{ existing.count_B or 0 }}" min="0"><span class="input-group-text">C</span><input type="number" name="count_C_{{ obj.obj_code }}" class="form-control" value="{{ existing.count_C or 0 }}" min="0"><span class="input-group-text">F</span><input type="number" name="count_F_{{ obj.obj_code }}" class="form-control" value="{{ existing.count_F or 0 }}" min="0"></div>
+            <div class="mb-3"><label class="form-label fw-bold">Improvement Suggestions</label><textarea name="improvement_{{ obj.obj_code }}" class="form-control" rows="2">{{ existing.improvement or '' }}</textarea></div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="card mb-3 border-warning"><div class="card-body bg-warning bg-opacity-10"><div class="form-check"><input class="form-check-input" type="checkbox" name="duplicate_to_others" id="dupCheck"><label class="form-check-label fw-bold" for="dupCheck">Duplicate these evaluations to ALL other degrees using this Course/Objective?</label></div></div></div>
+    <button type="submit" class="btn btn-success btn-lg">Save Evaluations</button>
+</form>
+{% endblock %}
