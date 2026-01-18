@@ -31,18 +31,6 @@ These tables store the fundamental data for the university. They utilize a **Sof
 | **Course** | `course_code` | Catalog of all departmental courses. |
 | **Instructor** | `instructor_id` | Profile information for faculty members. |
 
-#### SQL Implementation Example:
-```sql
--- Example: Degree Table with Soft Delete Implementation
-CREATE TABLE Degree ( 
-    degree_name VARCHAR(50), 
-    degree_level VARCHAR(10), -- e.g., 'BS', 'MS', 'PhD'
-    description TEXT, 
-    status VARCHAR(20) DEFAULT 'Active', -- Soft Delete Implementation
-    PRIMARY KEY (degree_name, degree_level) 
-);
-
-
 
 ### 📅 2. Scheduling & Assignments
 These tables manage the operational side of the university: tracking when courses are offered and which faculty members are responsible for them.
